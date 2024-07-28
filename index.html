@@ -1,38 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather App</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-        rel="stylesheet">
+    <style>
+        /* Added CSS for positioning the time element */
+        .weather {
+            position: relative;
+            text-align: center;
+        }
+        .time {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
 </head>
-
 <body>
     <div class="card">
         <div class="search">
             <input type="text" id="cityInput" placeholder="Enter City Name" spellcheck="false">
-            <button onclick="checkWeather()"><img src="images/searchicon.png" style="width: 15px;"></button>
+            <button onclick="checkWeather()"><img src="images/searchicon.png" alt="Search"></button>
         </div>
         <div class="weather">
-            <img src="images/cloudy.png" class="weathericon">
+            <p class="time" id="time"></p>
+            <img src="images/cloudy.png" class="weathericon" alt="Weather Icon">
             <p class="iconname">Drizzle</p>
             <h1 class="temp">25°C</h1>
             <h2 class="city">Aurangabad</h2>
-            <p class="country">IN</p>
+            <h3 class="country">IN</h3>
             <div class="detail">
-                <div class="col"><img src="images/humiditi.png">
+                <div class="col">
+                    <img src="images/humiditi.png" alt="Humidity Icon">
                     <div>
                         <p class="humidity">51%</p>
                         <p>Humidity</p>
                     </div>
                 </div>
-                <div class="col"><img src="images/wind.png">
+                <div class="col">
+                    <img src="images/wind.png" alt="Wind Speed Icon">
                     <div>
                         <p class="wind">25 Km/h</p>
                         <p>Wind Speed</p>
@@ -47,67 +58,80 @@
 
         async function fetchWeather(apiUrl) {
             try {
-                const response = await fetch(apiUrl); // Fetches data from the API
-                const data = await response.json(); // Converts the response to JSON
-
-                console.log(data); // Logs the response for debugging
+                const response = await fetch(apiUrl);
+                const data = await response.json();
 
                 if (data.cod === "404") {
-                    alert("City not found"); // Alerts the user if the city is not found
+                    alert("City not found");
                     return;
                 }
 
-                // Updates the UI with the fetched data
                 document.querySelector(".city").innerHTML = data.name;
-                document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°C";
+                document.querySelector(".temp").innerHTML = data.main.temp + "°C";
                 document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
                 document.querySelector(".wind").innerHTML = data.wind.speed + " Km/h";
                 document.querySelector(".iconname").innerHTML = data.weather[0].description;
                 document.querySelector(".country").innerHTML = data.sys.country;
 
-                // Updates the weather icon
                 const iconCode = data.weather[0].icon;
                 const iconUrl = `http://openweathermap.org/img/wn/${iconCode}.png`;
                 document.querySelector(".weathericon").src = iconUrl;
 
-                console.log(`Weather icon URL: ${iconUrl}`); // Logs the icon URL for debugging
+                const timezoneOffset = data.timezone;
+                updateTime(timezoneOffset);
 
             } catch (error) {
-                console.error("Error fetching the weather data: ", error); // Logs any errors
-                alert("An error occurred while fetching the weather data. Please try again."); // Alerts the user if an error occurs
+                console.error("Error fetching the weather data: ", error);
+                alert("An error occurred while fetching the weather data. Please try again.");
             }
         }
 
         async function checkWeather() {
-            const city = document.getElementById("cityInput").value; // Gets the city name from the input field
-            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?units=metric&q=${city}&appid=${apiKey}`; // Constructs the API URL
-            fetchWeather(apiUrl); // Fetches the weather data for the entered city
+            const city = document.getElementById("cityInput").value;
+            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?units=metric&q=${city}&appid=${apiKey}`;
+            fetchWeather(apiUrl);
         }
 
         function getLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(position => {
-                    const lat = position.coords.latitude; // Gets the latitude
-                    const lon = position.coords.longitude; // Gets the longitude
-                    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?units=metric&lat=${lat}&lon=${lon}&appid=${apiKey}`; // Constructs the API URL
-                    fetchWeather(apiUrl); // Fetches the weather data for the current location
-                }, () => {
-                    // If user denies permission or there's an error, fall back to a default city
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?units=metric&lat=${lat}&lon=${lon}&appid=${apiKey}`;
+                    fetchWeather(apiUrl);
+                }, error => {
                     const defaultCity = "Aurangabad";
                     const apiUrl = `https://api.openweathermap.org/data/2.5/weather?units=metric&q=${defaultCity}&appid=${apiKey}`;
-                    fetchWeather(apiUrl); // Fetches the weather data for the default city
+                    fetchWeather(apiUrl);
                 });
             } else {
-                // Geolocation API is not supported, fall back to a default city
                 const defaultCity = "Aurangabad";
                 const apiUrl = `https://api.openweathermap.org/data/2.5/weather?units=metric&q=${defaultCity}&appid=${apiKey}`;
-                fetchWeather(apiUrl); // Fetches the weather data for the default city
+                fetchWeather(apiUrl);
             }
         }
 
-        // Call getLocation on page load to set the default weather
-        window.onload = getLocation;
+        function updateTime(timezoneOffset) {
+            const now = new Date();
+            const localTime = new Date(now.getTime() + timezoneOffset * 1000);
+            const hours = localTime.getUTCHours();
+            const minutes = localTime.getUTCMinutes().toString().padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const formattedHours = (hours % 12 || 12).toString().padStart(2, '0');
+            const formattedTime = `${formattedHours}:${minutes} ${ampm}`;
+
+            document.getElementById('time').innerText = formattedTime;
+        }
+
+        window.onload = () => {
+            getLocation();
+            setInterval(() => {
+                const timezoneOffset = document.querySelector(".city").getAttribute("data-timezone-offset");
+                if (timezoneOffset) {
+                    updateTime(timezoneOffset);
+                }
+            }, 1000);
+        };
     </script>
 </body>
-
 </html>
