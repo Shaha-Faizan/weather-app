@@ -1,70 +1,76 @@
 body {
     font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    margin: 0;
-    background: #f0f0f0;
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    color: #fff;
 }
 
 .card {
-    background: #6EACDA;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     overflow: hidden;
     width: 350px;
+    max-width: 90%;
     text-align: center;
     padding: 20px;
+    backdrop-filter: blur(10px);
 }
 
 .search {
     display: flex;
-    justify-content: center;
     margin-bottom: 20px;
 }
 
 .search input {
-    width: 70%;
+    flex: 1;
     padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
+    border: none;
+    border-radius: 50px 0 0 50px;
     outline: none;
-    font-family: "Poppins", sans-serif;
-  font-weight: 400;
-  font-style: normal;
+    color: #333;
+    font-size: 16px;
 }
 
 .search button {
-    background: #586b7e;
+    background: #ff5e62;
     border: none;
-    padding: 10px;
+    padding: 10px 25px 15px;
     cursor: pointer;
-    border-radius: 40%;
-    margin-left: 10px;
+    border-radius: 0 50px 50px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s;
+}
+
+.search button:hover {
+    background: #ff3333;
 }
 
 .search button img {
-    width: 15px;
-}
-
-.weather {
-    margin-top: 20px;
+    vertical-align: middle;
+    width: 20px;
+    height: 20px;
 }
 
 .weathericon {
     width: 100px;
-    height: 100px;
+    margin: 20px 0;
 }
 
 .temp {
     font-size: 2.5em;
-    margin: 10px 0;
+    margin: 0;
 }
 
-.city {
-    font-size: 1.5em;
-    margin: 10px 0;
+.city, .country {
+    margin: 0;
 }
 
 .detail {
@@ -73,21 +79,30 @@ body {
     margin-top: 20px;
 }
 
-.col {
-    display: flex;
-    align-items: center;
+.detail .col {
+    text-align: center;
 }
 
-.col img {
+.detail img {
     width: 30px;
-    margin-right: 10px;
 }
 
-.col p {
-    margin: 0;
-    font-size: 0.9em;
-}
+/* Responsive Styles */
+@media (max-width: 600px) {
+    .card {
+        width: 90%;
+        padding: 15px;
+    }
 
-.country{
-    font: size 12px; 
+    .weathericon {
+        width: 80px;
+    }
+
+    .temp {
+        font-size: 1.5em;
+    }
+
+    .detail img {
+        width: 25px;
+    }
 }
