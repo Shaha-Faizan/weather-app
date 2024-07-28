@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="card">
+        <div class="search">
+            <input type="text" id="cityInput" placeholder="Enter City Name" spellcheck="false">
+            <button onclick="checkWeather()"><img src="images/searchicon.png" style="width: 15px;"></button>
+        </div>
+        <div class="weather">
+            <img src="images/cloudy.png" class="weathericon">
+            <p class="iconname">Drizzle</p>
+            <h1 class="temp">25°C</h1>
+            <h2 class="city">Aurangabad</h2>
+            <p class="country">IN</p>
+            <div class="detail">
+                <div class="col"><img src="images/humiditi.png">
+                    <div>
+                        <p class="humidity">51%</p>
+                        <p>Humidity</p>
+                    </div>
+                </div>
+                <div class="col"><img src="images/wind.png">
+                    <div>
+                        <p class="wind">25 Km/h</p>
+                        <p>Wind Speed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apiKey = "c4a4a0eb65b26804946995459a099f8b";
+
+        async function checkWeather() {
+            const city = document.getElementById("cityInput").value;
+            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?units=metric&q=${city}&appid=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                if (data.cod === "404") {
+                    alert("City not found");
+                    return;
+                }
+
+                document.querySelector(".city").innerHTML = data.name;
+                document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°C";
+                document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
+                document.querySelector(".wind").innerHTML = data.wind.speed + " Km/h";
+                document.querySelector(".iconname").innerHTML = data.weather[0].description;
+                document.querySelector(".country").innerHTML = data.sys.country;
+
+                const iconCode = data.weather[0].icon;
+                // Construct the URL for the weather icon using the icon code
+                const iconUrl = `http://openweathermap.org/img/wn/${iconCode}.png`;
+                // Update the src attribute of the img element to display the weather icon
+                document.querySelector(".weathericon").src = iconUrl;
+
+                console.log(`Weather icon URL: ${iconUrl}`); // Debugging: log the icon URL
+
+            } catch (error) {
+                console.error("Error fetching the weather data: ", error);
+                alert("An error occurred while fetching the weather data. Please try again.");
+            }
+        }
+    </script>
+</body>
+
+</html>
